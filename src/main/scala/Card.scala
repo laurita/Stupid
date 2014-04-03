@@ -19,7 +19,6 @@ class Card(s: Suite, r: Char) {
         case 'Q' => Math.pow(12, 2) + suit.strength
         case 'K' => Math.pow(13, 2) + suit.strength
         case 'A' => Math.pow(14, 2) + suit.strength
-
       }
     res.toInt
   }
