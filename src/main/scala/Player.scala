@@ -1,5 +1,8 @@
 object Player {
-
+  def sortCards(cs: List[Card], trump: Suite): List[Card] = {
+    val res = cs.sortBy(_.strength(trump))
+    res
+  }
 }
 
 class Player(cs: List[Card], n: Int) {
@@ -16,10 +19,7 @@ class Player(cs: List[Card], n: Int) {
     nonTrump.head
   }
 
-  def sortCards(cs: List[Card], trump: Suite): List[Card] = {
-    val res = cs.sortBy(_.strength(trump))
-    res
-  }
+
 
   def sortCards(trump: Suite): List[Card] = {
     this.cards.sortBy(_.strength(trump))
@@ -59,7 +59,7 @@ class Player(cs: List[Card], n: Int) {
     }
     if (toAdd.length > maxToAdd) {
       val (add, leave) = toAdd.splitAt(maxToAdd)
-      (add, sortCards(notToAdd:::leave, trump))
+      (add, Player.sortCards(notToAdd:::leave, trump))
     } else {
       (toAdd, notToAdd)
     }
