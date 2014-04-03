@@ -12,10 +12,13 @@ object Main {
     val file = Source.fromFile(name)
     val reader = file.bufferedReader()
     val writer = new PrintWriter(new File("output.txt"))
-    val trumpSuite = makeSuite(reader.readLine().head)
+    val t = reader.readLine().head
+    val trumpSuite = makeSuite(t)
     val players = makePlayers(reader.readLine())
     val stupid = new Stupid(trumpSuite, players(0), players(1))
     val winner = stupid.play()
+
+
   }
 
   def makeSuite(s: Char) = s match {
@@ -26,7 +29,7 @@ object Main {
   def makePlayers(s: String): List[Player] = {
     val cardStrs = s.split('|').toList.map(_.trim)
     cardStrs.zipWithIndex.map{ si =>
-      makePlayer(si._1, si._2)
+      makePlayer(si._1, si._2 + 1)
     }
   }
 
