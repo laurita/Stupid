@@ -58,9 +58,9 @@ class Card(s: Suite, r: Char) {
 
   // returns (defender card, cards except defender)
   def defenderAndRemaining(cards: List[Card], trump: Suite): (Option[Card], List[Card]) = {
-    println("cards: "+ cards)
+    //println("cards: "+ cards)
     def rec(left: List[Card], acc: List[Card]): (Option[Card], List[Card]) = {
-      println("left: "+ left +", acc: "+ acc)
+      //println("left: "+ left +", acc: "+ acc)
       left match {
         case Nil => (None, acc.reverse)
         case x::xs if ((this.suit != trump) && (x.suit == this.suit) && (x.rank > this.rank)) ||
@@ -72,7 +72,7 @@ class Card(s: Suite, r: Char) {
       }
     }
     val res = rec(cards, Nil)
-    println("defender of "+ this +" is "+ res._1 +" remaining: "+ res._2)
+    //println("defender of "+ this +" is "+ res._1 +" remaining: "+ res._2)
     res
   }
 

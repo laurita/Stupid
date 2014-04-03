@@ -1,4 +1,4 @@
-import java.io.{File, PrintWriter}
+import java.io.{BufferedReader, File, PrintWriter}
 import scala.io.Source
 
 object Main {
@@ -14,10 +14,8 @@ object Main {
     val writer = new PrintWriter(new File("output.txt"))
     val t = reader.readLine().head
     val trumpSuite = makeSuite(t)
-    val players = makePlayers(reader.readLine())
-    val stupid = new Stupid(trumpSuite, players(0), players(1))
-    val winner = stupid.play()
-
+    proceed(reader, writer, trumpSuite)
+    //println("player "+ winner + " won!!!")
 
   }
 
@@ -27,6 +25,7 @@ object Main {
   }
 
   def makePlayers(s: String): List[Player] = {
+    println("s: "+ s)
     val cardStrs = s.split('|').toList.map(_.trim)
     cardStrs.zipWithIndex.map{ si =>
       makePlayer(si._1, si._2 + 1)
@@ -40,6 +39,25 @@ object Main {
       new Card(suit, rank)
     }
     new Player(cards, number)
+  }
+
+  def proceed(reader: BufferedReader, writer: PrintWriter, trumpSuite: Suite) {
+    val line = reader.readLine()
+    //println("line: "+ line)
+
+    line match {
+      case "" | null =>
+        reader.close()
+        writer.close()
+
+      case _ =>
+        val players = makePlayers(line)
+        val stupid = new Stupid(trumpSuite, players(0), players(1))
+        val winner = stupid.play()
+        print(winner)
+        writer.write(winner)
+        proceed(reader, writer, trumpSuite)
+    }
   }
 
 }

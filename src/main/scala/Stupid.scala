@@ -55,7 +55,7 @@ object Stupid {
 class Stupid(tr: Suite, offense: Player, defense: Player) {
   //val suites = new Suite('H') :: new Suite('D') :: new Suite('C') ::  new Suite('S') :: Nil
   //val ranks = 2 :: 3 :: 4 :: 5 :: 6 :: 7 :: 8 :: 9 :: 10 :: 11 :: 12 :: 13 :: 14 :: Nil
-
+  val TableMax = 6
   val trump = tr
   val t: List[List[Card]] = List()
 
@@ -63,8 +63,8 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
   val o = new Player(offense.sortCards(trump), offense.number)
   val d = new Player(defense.sortCards(trump), defense.number)
 
-  println("player 1 created: "+ o)
-  println("player 2 created: "+ d)
+  //println("player 1 created: "+ o)
+  //println("player 2 created: "+ d)
 
   //o.cards = o.sortCards(trump)
   //d.cards = d.sortCards(trump)
@@ -74,70 +74,72 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
   // 1 - passing state
   def play(o: Player, d: Player, tr: Suite, toDefend: List[Card], defended: List[Card], state: Int): Int = {
     //println(o.cards(4).trumpHashCode)
-    println(s"o: $o, d: $d, trump: $trump, toDefend: $toDefend, defended: $defended")
+    //println(s"o: $o, d: $d, trump: $trump, toDefend: $toDefend, defended: $defended")
 
     if (d.cards.isEmpty) d.number
     else {
       state match {
         // passing state
         case 1 =>
-          println("case 1")
+          //println("case 1")
           // first card on table
           if (toDefend.isEmpty) {
-            println("first card: player "+ o.number +" plays "+ o.cards.head)
+            //println("first card: player "+ o.number +" plays "+ o.cards.head)
             play(d, new Player(o.cards.tail, o.number), tr, o.cards.head::toDefend, Nil, state)
           }
           // other passes
           else {
-            println("other passes?")
+            //println("other passes?")
             val passRank = toDefend.head.rank
             val (removed, remaining) = o.removeFirstOfRank(passRank)
             removed match {
               // can pass
               case Some(x) =>
-                println("player "+ o.number + " passes with "+ x)
+                //println("player "+ o.number + " passes with "+ x)
                 play(d, new Player(remaining, o.number), tr, x::toDefend, Nil, state)
               // no card to pass, next state
               case None =>
-                println("player "+ o.number + " cannot pass")
+                //println("player "+ o.number + " cannot pass")
                 play(d, o, tr, toDefend, Nil, state+1)
             }
           }
         // defending state, d starts defending
         case 2 =>
-          println("case 2")
+          //println("case 2")
           toDefend match {
             // all defended, defender attacks in 1 stage
             case Nil =>
-              println("all defended, defender attacks in state 1")
+              //println("all defended, defender attacks in state 1")
               play(d, o, tr, Nil, Nil, state-1)
 
             // cards left to defend, defender tries to defend
             case cs =>
-              println("there are cards to defend for player "+ d.number)
+              //println("there are cards to defend for player "+ d.number)
               val (defender, remaining) = d.getDefenceCards(cs, tr)
-              println("remaining: "+ remaining + ", defender: "+ defender)
-              println("cs: "+ cs)
+              //println("remaining: "+ remaining + ", defender: "+ defender)
+              //println("cs: "+ cs)
               defender match {
 
                 // cannot defend, defender takes all cards and starts offence in state 1
                 case x if x.length < cs.length =>
-                  println("defender cards: "+ defender)
-                  println("player "+ d.number + " cannot defend")
+                  //println("defender cards: "+ defender)
+                  //println("player "+ d.number + " cannot defend")
                   val pl = new Player(d.cards ::: toDefend ::: defended, d.number)
                   play(new Player(pl.sortCards(trump), pl.number), o, tr, Nil, Nil, state-1)
                 // can defend, defends, go to stage 3 when attacker can add more cards
                 case x if x.length == cs.length =>
-                  println("defender cards: "+ defender)
-                  println("player "+ d.number + " defended all cards")
+                  //println("defender cards: "+ defender)
+                  //println("player "+ d.number + " defended all cards")
                   play(o, new Player(remaining, d.number), tr, Nil, x:::cs:::defended, state+1)
 
               }
           }
         // attacker tries to add cards
         case 3 =>
-
-
+          //println("player "+ o.number + " tries to add cards")
+          val (toAdd, atHand) = o.addCards(defended, d.cards.length, trump)
+          val pl = new Player(atHand, o.number)
+          play(pl, d, tr, toAdd:::toDefend, defended, state-1)
       }
     }
     1

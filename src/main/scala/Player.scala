@@ -19,6 +19,14 @@ class Player(cs: List[Card], n: Int) {
     res
   }
 
+  def sortCards(cs: List[Card], trump: Suite): List[Card] = {
+    val res = cs.sortBy(_.strength(trump))
+    //println(cs)
+    res
+    //println(this.cards.map(c => (c, if (c.suit.equals(trump)) c.trumpHashCode else c.hashCode)))
+    //this.cards.sortBy(c => if (c.suit.equals(trump)) c.trumpHashCode else c.hashCode)
+  }
+
   def sortCards(trump: Suite): List[Card] = {
     val cs = this.cards.sortBy(_.strength(trump))
     //println(cs)
@@ -38,9 +46,9 @@ class Player(cs: List[Card], n: Int) {
 
   // toBeDefended
   def getDefenceCards(toBeDefended: List[Card], trump: Suite): (List[Card], List[Card]) = {
-    println("toBeDefended: "+ toBeDefended)
+    //println("toBeDefended: "+ toBeDefended)
     def rec(toDefend: List[Card], defence: List[Card], remaining: List[Card]): (List[Card], List[Card]) = {
-      println("toDefend: "+ toDefend + " defence: "+ defence + " remaining: "+ remaining)
+      //println("toDefend: "+ toDefend + " defence: "+ defence + " remaining: "+ remaining)
       toDefend match {
         case Nil => (defence.reverse, remaining.reverse)
         case x::xs =>
@@ -54,5 +62,21 @@ class Player(cs: List[Card], n: Int) {
       }
     }
     rec(toBeDefended, Nil, this.cards)
+  }
+
+  // returns cards to add to table, cards left at hand
+  def addCards(onTable: List[Card], maxToAdd: Int, trump: Suite): (List[Card], List[Card]) = {
+
+    val (toAdd, notToAdd) = this.cards.partition{ pc =>
+      onTable.exists( tc => tc.rank == pc.rank)
+    }
+
+    if (toAdd.length > maxToAdd) {
+      val (add, leave) = toAdd.splitAt(maxToAdd)
+      (add, sortCards(notToAdd:::leave, trump))
+    } else {
+      (toAdd, notToAdd)
+    }
+
   }
 }
