@@ -1,5 +1,3 @@
-object Card{}
-
 class Card(s: Suite, r: Char) {
 
   def this(s: Suite, rnk: String) {
