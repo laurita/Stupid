@@ -1,7 +1,4 @@
-
-object Card {
-
-}
+object Card{}
 
 class Card(s: Suite, r: Char) {
 
@@ -12,8 +9,7 @@ class Card(s: Suite, r: Char) {
   val rank = r
   val suit = s
 
-  def strength(trump: Suite) = {
-    //println("trump: "+ trump)
+  def strength(trump: Suite): Int = {
     val res = if (suit == trump)
       Math.pow(20, 2) + suit.strength
     else
@@ -27,8 +23,7 @@ class Card(s: Suite, r: Char) {
         case 'A' => Math.pow(14, 2) + suit.strength
 
       }
-    //println(this + " strength is " + res)
-    res
+    res.toInt
   }
 
   override def toString: String = {
@@ -58,9 +53,7 @@ class Card(s: Suite, r: Char) {
 
   // returns (defender card, cards except defender)
   def defenderAndRemaining(cards: List[Card], trump: Suite): (Option[Card], List[Card]) = {
-    //println("cards: "+ cards)
     def rec(left: List[Card], acc: List[Card]): (Option[Card], List[Card]) = {
-      //println("left: "+ left +", acc: "+ acc)
       left match {
         case Nil => (None, acc.reverse)
         case x::xs if ((this.suit != trump) && (x.suit == this.suit) && (x.rank > this.rank)) ||
@@ -71,9 +64,7 @@ class Card(s: Suite, r: Char) {
           rec(xs, x::acc)
       }
     }
-    val res = rec(cards, Nil)
-    //println("defender of "+ this +" is "+ res._1 +" remaining: "+ res._2)
-    res
+    rec(cards, Nil)
   }
 
 

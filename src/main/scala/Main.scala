@@ -15,7 +15,8 @@ object Main {
     val t = reader.readLine().head
     val trumpSuite = makeSuite(t)
     proceed(reader, writer, trumpSuite)
-    //println("player "+ winner + " won!!!")
+
+    println("\npercentage: "+ percentageTruth())
 
   }
 
@@ -25,7 +26,6 @@ object Main {
   }
 
   def makePlayers(s: String): List[Player] = {
-    println("s: "+ s)
     val cardStrs = s.split('|').toList.map(_.trim)
     cardStrs.zipWithIndex.map{ si =>
       makePlayer(si._1, si._2 + 1)
@@ -43,7 +43,6 @@ object Main {
 
   def proceed(reader: BufferedReader, writer: PrintWriter, trumpSuite: Suite) {
     val line = reader.readLine()
-    //println("line: "+ line)
 
     line match {
       case "" | null =>
@@ -55,9 +54,21 @@ object Main {
         val stupid = new Stupid(trumpSuite, players(0), players(1))
         val winner = stupid.play()
         print(winner)
-        writer.write(winner)
+        writer.write(winner.toString)
         proceed(reader, writer, trumpSuite)
     }
+  }
+
+  def percentageTruth(): Double = {
+    val file1 = Source.fromFile("data/results.txt")
+    val reader1 = file1.bufferedReader()
+    val exp = reader1.readLine()
+    val file2 = Source.fromFile("output.txt")
+    val reader2 = file2.bufferedReader()
+    val act = reader2.readLine()
+    exp.toList.map(_.asDigit).zip(act.toList.map(_.asDigit)).foldLeft(0)( (b, a) => {
+      if (a._1 == a._2) b+1 else b
+    } ).toDouble / exp.length
   }
 
 }

@@ -1,6 +1,3 @@
-import java.io.{File, PrintWriter}
-import scala.io.Source
-
 /**
  * ## Stupid ##
  *
@@ -53,8 +50,6 @@ object Stupid {
 }
 
 class Stupid(tr: Suite, offense: Player, defense: Player) {
-  //val suites = new Suite('H') :: new Suite('D') :: new Suite('C') ::  new Suite('S') :: Nil
-  //val ranks = 2 :: 3 :: 4 :: 5 :: 6 :: 7 :: 8 :: 9 :: 10 :: 11 :: 12 :: 13 :: 14 :: Nil
   val TableMax = 6
   val trump = tr
   val t: List[List[Card]] = List()
@@ -63,25 +58,18 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
   val o = new Player(offense.sortCards(trump), offense.number)
   val d = new Player(defense.sortCards(trump), defense.number)
 
-  //println("player 1 created: "+ o)
-  //println("player 2 created: "+ d)
-
-  //o.cards = o.sortCards(trump)
-  //d.cards = d.sortCards(trump)
-
   def play(): Int = play(o, d, tr, Nil, Nil, 1)
 
-  // 1 - passing state
+  // 1 - passing state, 2 - defending state, 3 - adding cards to defend state
   def play(o: Player, d: Player, tr: Suite, toDefend: List[Card], defended: List[Card], state: Int): Int = {
-    //println(o.cards(4).trumpHashCode)
     //println(s"o: $o, d: $d, trump: $trump, toDefend: $toDefend, defended: $defended")
 
-    if (d.cards.isEmpty) d.number
+    if (o.cards.isEmpty) o.number
+    else if (d.cards.isEmpty) d.number
     else {
       state match {
         // passing state
         case 1 =>
-          //println("case 1")
           // first card on table
           if (toDefend.isEmpty) {
             //println("first card: player "+ o.number +" plays "+ o.cards.head)
@@ -105,30 +93,24 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
           }
         // defending state, d starts defending
         case 2 =>
-          //println("case 2")
           toDefend match {
             // all defended, defender attacks in 1 stage
             case Nil =>
               //println("all defended, defender attacks in state 1")
               play(d, o, tr, Nil, Nil, state-1)
-
             // cards left to defend, defender tries to defend
             case cs =>
               //println("there are cards to defend for player "+ d.number)
               val (defender, remaining) = d.getDefenceCards(cs, tr)
               //println("remaining: "+ remaining + ", defender: "+ defender)
-              //println("cs: "+ cs)
               defender match {
-
                 // cannot defend, defender takes all cards and starts offence in state 1
                 case x if x.length < cs.length =>
-                  //println("defender cards: "+ defender)
                   //println("player "+ d.number + " cannot defend")
                   val pl = new Player(d.cards ::: toDefend ::: defended, d.number)
-                  play(new Player(pl.sortCards(trump), pl.number), o, tr, Nil, Nil, state-1)
+                  play(o, new Player(pl.sortCards(trump), pl.number), tr, Nil, Nil, state-1)
                 // can defend, defends, go to stage 3 when attacker can add more cards
                 case x if x.length == cs.length =>
-                  //println("defender cards: "+ defender)
                   //println("player "+ d.number + " defended all cards")
                   play(o, new Player(remaining, d.number), tr, Nil, x:::cs:::defended, state+1)
 
@@ -137,12 +119,11 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
         // attacker tries to add cards
         case 3 =>
           //println("player "+ o.number + " tries to add cards")
-          val (toAdd, atHand) = o.addCards(defended, d.cards.length, trump)
+          val (toAdd, atHand) = o.addCards(defended:::toDefend, d.cards.length, trump)
           val pl = new Player(atHand, o.number)
           play(pl, d, tr, toAdd:::toDefend, defended, state-1)
       }
     }
-    1
   }
 
 

@@ -1,14 +1,11 @@
-object Suite {
-
-}
-
 class Suite(c: Char) {
   val s = c
+
   val strength =  s match {
-    case 'H' => 4
-    case 'D' => 3
-    case 'C' => 2
-    case 'S' => 1
+    case 'H' => 1
+    case 'D' => 2
+    case 'C' => 3
+    case 'S' => 4
   }
 
   override def toString = s.toString

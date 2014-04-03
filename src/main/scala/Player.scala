@@ -3,36 +3,26 @@ object Player {
 }
 
 class Player(cs: List[Card], n: Int) {
-  val cards = cs//.sortBy(_.trumpHashCode)
+  val cards = cs
   val number = n
 
   override def toString = {
-    cs.toString()
+    "Player(%s, %d)".format(cs.toString(), this.number)
   }
 
   def smallestNonTrump(trump: Suite): Card = {
-    //println("smallestNonTrump")
-    val nonTrump = cards.filterNot( c => c.suit.equals(trump)).sortBy(_.hashCode)
+    val nonTrump: List[Card] = cards.filterNot( c => c.suit.equals(trump)).sortBy(_.hashCode)
     println(nonTrump)
-    val res = nonTrump.head
-    println(res)
-    res
+    nonTrump.head
   }
 
   def sortCards(cs: List[Card], trump: Suite): List[Card] = {
     val res = cs.sortBy(_.strength(trump))
-    //println(cs)
     res
-    //println(this.cards.map(c => (c, if (c.suit.equals(trump)) c.trumpHashCode else c.hashCode)))
-    //this.cards.sortBy(c => if (c.suit.equals(trump)) c.trumpHashCode else c.hashCode)
   }
 
   def sortCards(trump: Suite): List[Card] = {
-    val cs = this.cards.sortBy(_.strength(trump))
-    //println(cs)
-    cs
-    //println(this.cards.map(c => (c, if (c.suit.equals(trump)) c.trumpHashCode else c.hashCode)))
-    //this.cards.sortBy(c => if (c.suit.equals(trump)) c.trumpHashCode else c.hashCode)
+    this.cards.sortBy(_.strength(trump))
   }
 
   def removeFirstOfRank(rank: Char): (Option[Card], List[Card]) = {
@@ -44,7 +34,6 @@ class Player(cs: List[Card], n: Int) {
     }
   }
 
-  // toBeDefended
   def getDefenceCards(toBeDefended: List[Card], trump: Suite): (List[Card], List[Card]) = {
     //println("toBeDefended: "+ toBeDefended)
     def rec(toDefend: List[Card], defence: List[Card], remaining: List[Card]): (List[Card], List[Card]) = {
@@ -55,7 +44,6 @@ class Player(cs: List[Card], n: Int) {
           val (defender, rem) = x.defenderAndRemaining(remaining, trump)
           defender match {
             case None =>
-              // TODO:
               (Nil, rem)
             case Some(c) => rec(xs, c::defence, rem)
           }
@@ -66,17 +54,14 @@ class Player(cs: List[Card], n: Int) {
 
   // returns cards to add to table, cards left at hand
   def addCards(onTable: List[Card], maxToAdd: Int, trump: Suite): (List[Card], List[Card]) = {
-
     val (toAdd, notToAdd) = this.cards.partition{ pc =>
       onTable.exists( tc => tc.rank == pc.rank)
     }
-
     if (toAdd.length > maxToAdd) {
       val (add, leave) = toAdd.splitAt(maxToAdd)
       (add, sortCards(notToAdd:::leave, trump))
     } else {
       (toAdd, notToAdd)
     }
-
   }
 }
