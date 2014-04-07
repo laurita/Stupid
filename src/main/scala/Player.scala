@@ -19,8 +19,6 @@ class Player(cs: List[Card], n: Int) {
     nonTrump.head
   }
 
-
-
   def sortCards(trump: Suite): List[Card] = {
     this.cards.sortBy(_.strength(trump))
   }
@@ -35,9 +33,7 @@ class Player(cs: List[Card], n: Int) {
   }
 
   def getDefenceCards(toBeDefended: List[Card], trump: Suite): (List[Card], List[Card]) = {
-    //println("toBeDefended: "+ toBeDefended)
     def rec(toDefend: List[Card], defence: List[Card], remaining: List[Card]): (List[Card], List[Card]) = {
-      //println("toDefend: "+ toDefend + " defence: "+ defence + " remaining: "+ remaining)
       toDefend match {
         case Nil => (defence.reverse, remaining.reverse)
         case x::xs =>

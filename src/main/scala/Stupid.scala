@@ -89,7 +89,6 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
                   play(d, o, toDefend, Nil, Defence)
               }
             }
-
           }
         }
       // defending state, defender starts defending
