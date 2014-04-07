@@ -59,34 +59,37 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
 
   def play(o: Player, d: Player, toDefend: List[Card], defended: List[Card], state: Int): Int = {
     println(s"o: $o, d: $d, toDefend: $toDefend, defended: $defended, state: $state")
-    if (o.cards.isEmpty) o.number
-    else if (d.cards.isEmpty) d.number
+    if (d.cards.isEmpty) d.number
     else {
       state match {
         // passing state
         case 1 =>
-          // first card on table
-          println("state 1")
-          if (toDefend.isEmpty) {
-            println("first card")
-            play(d, new Player(o.cards.tail, o.number), Player.sortCards(o.cards.head::toDefend, trump), Nil, state)
-          }
-          // other passes
+          if (o.cards.isEmpty) o.number
           else {
-            println("other offences")
-            val passRank = toDefend.head.rank
-            val (removed, remaining) = o.removeFirstOfRank(passRank)
-            removed match {
-              // can pass
-              case Some(x) =>
-                println(s"passing with $x")
-                play(d, new Player(remaining, o.number), Player.sortCards(x::toDefend, trump), Nil, state)
-              // no card to pass, go to defending state
-              case None =>
-                println("cannot pass")
-                play(d, o, toDefend, Nil, 2)
+            // first card on table
+            println("state 1")
+            if (toDefend.isEmpty) {
+              println("first card")
+              play(d, new Player(o.cards.tail, o.number), Player.sortCards(o.cards.head::toDefend, trump), Nil, state)
+            }
+            // other passes
+            else {
+              println("other offences")
+              val passRank = toDefend.head.rank
+              val (removed, remaining) = o.removeFirstOfRank(passRank)
+              removed match {
+                // can pass
+                case Some(x) =>
+                  println(s"passing with $x")
+                  play(d, new Player(remaining, o.number), Player.sortCards(x::toDefend, trump), Nil, state)
+                // no card to pass, go to defending state
+                case None =>
+                  println("cannot pass")
+                  play(d, o, toDefend, Nil, 2)
+              }
             }
           }
+
         // defending state, defender starts defending
         case 2 =>
           println("state 2")
@@ -120,6 +123,7 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
                 case Some(x) =>
                   println(s"defender defends against $c with $defender")
                   play(o, new Player(remaining, d.number), cs, x::c::defended, 2)
+
               }
           }
         // attacker adds cards before defender takes home

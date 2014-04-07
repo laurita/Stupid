@@ -16,7 +16,7 @@ object Main {
     val trumpSuite = makeSuite(t)
     proceed(reader, writer, trumpSuite)
 
-    //println("\npercentage: "+ percentageTruth())
+    println("\npercentage: "+ percentageTruth())
 
   }
 
