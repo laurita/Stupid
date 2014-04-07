@@ -94,7 +94,6 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
 
             }
           }
-
         // defending state, defender starts defending
         case 2 =>
           println("state 2")
@@ -130,7 +129,6 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
                   case Some(x) =>
                     println(s"defender defends against $c with $defender")
                     play(o, new Player(remaining, d.number), cs, x::c::defended, 2)
-
                 }
             }
           }
@@ -138,11 +136,9 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
         // attacker adds cards before defender takes home
         case 3 =>
           println("state 3")
-          // according to example-run, I let attacker add more than the defender has at hand
-          val (toAdd, atHand) = o.addCards(defended:::toDefend, d.cards.length, trump)
+          // according to specs, I attacker cannot add more cards than defender has at hand
+          val (toAdd, atHand) = o.addCards(defended:::toDefend, d.cards.length - toDefend.length, trump)
           println(s"attacker adds $toAdd and defender takes home")
-          // according to specs, I should let to only add as much as defender has
-          //val (toAdd, atHand) = o.addCards(defended:::toDefend, d.cards.length - toDefend.length, trump)
           val pl1 = new Player(atHand, o.number)
           val pl2 = new Player(Player.sortCards(d.cards ::: toAdd ::: defended ::: toDefend, trump), d.number)
           play(pl1, pl2, Nil, Nil, 1)

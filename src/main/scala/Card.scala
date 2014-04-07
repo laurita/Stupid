@@ -9,7 +9,7 @@ class Card(s: Suite, r: Char) {
 
   def strength(trump: Suite): Int = {
     val res = if (suit == trump)
-      Math.pow(20, 2) + suit.strength
+      Math.pow(20, 2) + rank
     else
       r match {
         case x if x >= 50 && x <= 57 =>
@@ -63,6 +63,4 @@ class Card(s: Suite, r: Char) {
     }
     rec(cards, Nil)
   }
-
-
 }
