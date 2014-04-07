@@ -59,73 +59,82 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
 
   def play(o: Player, d: Player, toDefend: List[Card], defended: List[Card], state: Int): Int = {
     println(s"o: $o, d: $d, toDefend: $toDefend, defended: $defended, state: $state")
-    if (d.cards.isEmpty) d.number
-    else {
+    //if (d.cards.isEmpty) d.number
+    //else {
       state match {
         // passing state
         case 1 =>
+          println("state 1")
           if (o.cards.isEmpty) o.number
           else {
             // first card on table
-            println("state 1")
             if (toDefend.isEmpty) {
               println("first card")
               play(d, new Player(o.cards.tail, o.number), Player.sortCards(o.cards.head::toDefend, trump), Nil, state)
             }
             // other passes
             else {
-              println("other offences")
-              val passRank = toDefend.head.rank
-              val (removed, remaining) = o.removeFirstOfRank(passRank)
-              removed match {
-                // can pass
-                case Some(x) =>
-                  println(s"passing with $x")
-                  play(d, new Player(remaining, o.number), Player.sortCards(x::toDefend, trump), Nil, state)
-                // no card to pass, go to defending state
-                case None =>
-                  println("cannot pass")
-                  play(d, o, toDefend, Nil, 2)
+              if (d.cards.length <= toDefend.length) {
+                play(d, o, toDefend, defended, 2)
+              } else {
+                println("other passes?")
+                val passRank = toDefend.head.rank
+                val (removed, remaining) = o.removeFirstOfRank(passRank)
+                removed match {
+                  // can pass
+                  case Some(x) =>
+                    println(s"passing with $x")
+                    play(d, new Player(remaining, o.number), Player.sortCards(x::toDefend, trump), Nil, state)
+                  // no card to pass, go to defending state
+                  case None =>
+                    println("cannot pass")
+                    play(d, o, toDefend, Nil, 2)
+                }
               }
+
             }
           }
 
         // defending state, defender starts defending
         case 2 =>
           println("state 2")
-          toDefend match {
-            // nothing to defend
-            case Nil =>
-              println("nothing to defend")
-              val (toAdd, atHand) = o.addCards(defended, d.cards.length, trump)
-              // attacker has nothing to add
-              if (toAdd.isEmpty) {
-                println("attacker cannot add any cards")
-                play(d, o, Nil, Nil, 1)
-              }
-              // attacker adds cards to defend
-              else {
-                println(s"attacker adds $toAdd")
-                val pl = new Player(atHand, o.number)
-                play(pl, d, Player.sortCards(toAdd, trump), defended, 2)
-              }
+          if (d.cards.isEmpty) d.number
+          else {
+            toDefend match {
+              // nothing to defend
+              case Nil =>
+                println("nothing to defend")
+                val (toAdd, atHand) = o.addCards(defended, d.cards.length, trump)
+                // attacker has nothing to add
+                if (toAdd.isEmpty) {
+                  println("attacker cannot add any cards")
+                  play(d, o, Nil, Nil, 1)
+                }
+                // attacker adds cards to defend
+                else {
+                  println(s"attacker adds $toAdd")
+                  val pl = new Player(atHand, o.number)
+                  play(pl, d, Player.sortCards(toAdd, trump), defended, 2)
+                }
 
-            // cards left to defend, defender defends
-            case c::cs =>
-              println(s"cards left to defend: $toDefend")
-              val (defender, remaining) = c.defenderAndRemaining(d.cards, tr)
-              defender match {
-                // defender cannot defend, go to adding state before taking cards
-                case None =>
-                  println(s"defender cannot defend against $c")
-                  play(o, d, toDefend, defended, 3)
-                // can defend, defends, go back to stage 2 to defend remaining cards
-                case Some(x) =>
-                  println(s"defender defends against $c with $defender")
-                  play(o, new Player(remaining, d.number), cs, x::c::defended, 2)
+              // cards left to defend, defender defends
+              case c::cs =>
+                println(s"cards left to defend: $toDefend")
+                val (defender, remaining) = c.defenderAndRemaining(d.cards, tr)
+                defender match {
+                  // defender cannot defend, go to adding state before taking cards
+                  case None =>
+                    println(s"defender cannot defend against $c")
+                    play(o, d, toDefend, defended, 3)
+                  // can defend, defends, go back to stage 2 to defend remaining cards
+                  case Some(x) =>
+                    println(s"defender defends against $c with $defender")
+                    play(o, new Player(remaining, d.number), cs, x::c::defended, 2)
 
-              }
+                }
+            }
           }
+
         // attacker adds cards before defender takes home
         case 3 =>
           println("state 3")
@@ -139,6 +148,6 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
           play(pl1, pl2, Nil, Nil, 1)
       }
     }
-  }
+  //}
 
 }

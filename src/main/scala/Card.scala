@@ -53,8 +53,8 @@ class Card(s: Suite, r: Char) {
     def rec(left: List[Card], acc: List[Card]): (Option[Card], List[Card]) = {
       left match {
         case Nil => (None, acc.reverse)
-        case x::xs if ((this.suit != trump) && (x.suit == this.suit) && (x.rank > this.rank)) ||
-          ((this.suit == trump) && (x.suit == trump) && (x.rank > this.rank)) ||
+        case x::xs if ((this.suit != trump) && (x.suit == this.suit) && (this.strength(trump) < x.strength(trump))) ||
+          ((this.suit == trump) && (x.suit == trump) && (this.strength(trump) < x.strength(trump))) ||
           ((this.suit != trump) && (x.suit == trump)) =>
           (Some(x), acc.reverse:::xs)
         case x::xs =>
