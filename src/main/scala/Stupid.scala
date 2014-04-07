@@ -55,13 +55,13 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
   val o = new Player(offense.sortCards(trump), offense.number)
   val d = new Player(defense.sortCards(trump), defense.number)
 
-  def play(): Int = play(o, d, Nil, Nil, 1)
+  def play(): Int = play(o, d, Nil, Nil, Pass)
 
-  def play(o: Player, d: Player, toDefend: List[Card], defended: List[Card], state: Int): Int = {
+  def play(o: Player, d: Player, toDefend: List[Card], defended: List[Card], state: StupidState): Int = {
     println(s"o: $o, d: $d, toDefend: $toDefend, defended: $defended, state: $state")
     state match {
       // passing state
-      case 1 =>
+      case Pass =>
         println("state 1")
         if (o.cards.isEmpty) o.number
         else {
@@ -73,7 +73,7 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
           // other passes
           else {
             if (d.cards.length <= toDefend.length) {
-              play(d, o, toDefend, defended, 2)
+              play(d, o, toDefend, defended, Defence)
             } else {
               println("other passes?")
               val passRank = toDefend.head.rank
@@ -86,14 +86,14 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
                 // no card to pass, go to defending state
                 case None =>
                   println("cannot pass")
-                  play(d, o, toDefend, Nil, 2)
+                  play(d, o, toDefend, Nil, Defence)
               }
             }
 
           }
         }
       // defending state, defender starts defending
-      case 2 =>
+      case Defence =>
         println("state 2")
         if (d.cards.isEmpty) d.number
         else {
@@ -105,13 +105,13 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
               // attacker has nothing to add
               if (toAdd.isEmpty) {
                 println("attacker cannot add any cards")
-                play(d, o, Nil, Nil, 1)
+                play(d, o, Nil, Nil, Pass)
               }
               // attacker adds cards to defend
               else {
                 println(s"attacker adds $toAdd")
                 val pl = new Player(atHand, o.number)
-                play(pl, d, Player.sortCards(toAdd, trump), defended, 2)
+                play(pl, d, Player.sortCards(toAdd, trump), defended, Defence)
               }
 
             // cards left to defend, defender defends
@@ -122,25 +122,30 @@ class Stupid(tr: Suite, offense: Player, defense: Player) {
                 // defender cannot defend, go to adding state before taking cards
                 case None =>
                   println(s"defender cannot defend against $c")
-                  play(o, d, toDefend, defended, 3)
+                  play(o, d, toDefend, defended, TakeHome)
                 // can defend, defends, go back to stage 2 to defend remaining cards
                 case Some(x) =>
                   println(s"defender defends against $c with $defender")
-                  play(o, new Player(remaining, d.number), cs, x::c::defended, 2)
+                  play(o, new Player(remaining, d.number), cs, x::c::defended, Defence)
               }
           }
         }
 
       // attacker adds cards before defender takes home
-      case 3 =>
+      case TakeHome =>
         println("state 3")
         // according to specs, I attacker cannot add more cards than defender has at hand
         val (toAdd, atHand) = o.addCards(defended:::toDefend, d.cards.length - toDefend.length, trump)
         println(s"attacker adds $toAdd and defender takes home")
         val pl1 = new Player(atHand, o.number)
         val pl2 = new Player(Player.sortCards(d.cards ::: toAdd ::: defended ::: toDefend, trump), d.number)
-        play(pl1, pl2, Nil, Nil, 1)
+        play(pl1, pl2, Nil, Nil, Pass)
     }
   }
 
 }
+
+sealed trait StupidState
+case object Pass extends StupidState
+case object Defence extends StupidState
+case object TakeHome extends StupidState
