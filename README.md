@@ -3,7 +3,8 @@ The Fool
 
 A simplified version of a Lithuanian/Russian card game called "The Fool". 
 
- 
+## Rules
+
 There's a Lithuanian/Russian card game called "The Fool".
 
 It has these (simplified) rules:
@@ -36,3 +37,12 @@ First player starts as offense. Offense always starts.
 
 Repeat this until one player does not have cards in his hand after a turn.
 That player wins.
+
+## Running the program
+
+1. Fork the repository
+2. Clone it
+3. cd to the project directory
+4. run `mvn clean compile assembly:single`
+5. run `java -cp the_fool-1.0-SNAPSHOT-jar-with-dependencies.jar Main <input_file>`
+
