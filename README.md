@@ -1,10 +1,10 @@
-Stupid
+The Fool
 ======
 
-A simplified version of a Lithuanian/Russian card game called Stupid. 
+A simplified version of a Lithuanian/Russian card game called "The Fool". 
 
  
-There's a Lithuanian/Russian card game called 'Stupid'.
+There's a Lithuanian/Russian card game called "The Fool".
 
 It has these (simplified) rules:
 
